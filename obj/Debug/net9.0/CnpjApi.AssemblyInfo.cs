@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CnpjApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5c33b7d92801810bf14d1caae1139bcc981fe3fd")]
 [assembly: System.Reflection.AssemblyProductAttribute("CnpjApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CnpjApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CnpjApi.Services;
-using CnpjApi.DTOSs;
+using CnpjApi.DTOs;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Web.Http;
 
 namespace CnpjApi.Controllers
 {
@@ -35,9 +35,9 @@ namespace CnpjApi.Controllers
 
         [Microsoft.AspNetCore.Mvc.HttpGet("filtros")]
         public async Task<IActionResult> ConsultarPorFiltros(
-            [FromQuery] string uf = null,
+            [FromQuery] string? uf = null,
             [FromQuery] int ano = 0,
-            [FromQuery] string formaTributacao = null,
+            [FromQuery] string? formaTributacao = null,
             [FromQuery] decimal capitalSocialMinimo = 0)
         {
             var filtros = new ConsultaFiltrosDto

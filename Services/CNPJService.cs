@@ -1,5 +1,9 @@
-﻿using CnpjApi.Data;
-using CnpjApi.DTOSs;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CnpjApi.Data;
+using CnpjApi.DTOs;
 using CnpjApi.Models;
 using CnpjApi.Services;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +12,7 @@ namespace CnpjApi.Services
 {
     public interface ICNPJService
     {
-        Task<CNPJResponseDto> ConsultarCNPJ(string cnpj);
+        Task<CNPJResponseDto?> ConsultarCNPJ(string cnpj);
         Task<bool> CNPJExiste(string cnpj);
         Task<List<CNPJResponseDto>> ConsultarPorFiltros(ConsultaFiltrosDto filtros);
     }
@@ -22,7 +26,7 @@ namespace CnpjApi.Services
             _context = context;
         }
 
-        public async Task<CNPJResponseDto> ConsultarCNPJ(string cnpj)
+        public async Task<CNPJResponseDto?> ConsultarCNPJ(string cnpj)
         {
             var cnpjLimpo = LimparCNPJ(cnpj);
 
@@ -49,12 +53,12 @@ namespace CnpjApi.Services
             return MapToDto(empresa, estabelecimento, simples, tributacao, socios);
         }
 
-        private CNPJResponseDto MapToDto(Empresa empresa, Estabelecimento estabelecimento,
-            Simples simples, Tributacao tributacao, List<Socio> socios)
+        private CNPJResponseDto MapToDto(Empresa empresa, Estabelecimento? estabelecimento,
+            Simples? simples, Tributacao? tributacao, List<Socio> socios)
         {
             return new CNPJResponseDto
             {
-                CNPJ = FormatCNPJ(empresa.CNPJ),
+                CNPJ = FormatCNPJ(empresa.CNPJ ?? ""),
                 RazaoSocial = empresa.RAZ_SOC,
                 NomeFantasia = estabelecimento?.RAZ_SOC,
                 NaturezaJuridica = empresa.NAT_JUR,
@@ -65,22 +69,23 @@ namespace CnpjApi.Services
                 MotivoSituacaoCadastral = estabelecimento?.MOT_SIT_CAD,
                 DataInicioAtividade = estabelecimento?.DT_INI_ATIV,
                 CNAEPrincipal = estabelecimento?.CNAE_PRINCIPAL,
-                CNAESecundarios = estabelecimento?.CNAE_SECUNDARIO?.Split(',').ToList(),
+                CNAESecundarios = !string.IsNullOrEmpty(estabelecimento?.CNAE_SECUNDARIO) ? estabelecimento.CNAE_SECUNDARIO.Split(',').ToList() : new List<string>(),
                 Endereco = new EnderecoDto
                 {
-                    LogradouroCompleto = $"{estabelecimento?.TIPO_LOGRADOURO} {estabelecimento?.LOGRADOURO}",
+                    LogradouroCompleto = !string.IsNullOrEmpty(estabelecimento?.TIPO_LOGRADOURO) && !string.IsNullOrEmpty(estabelecimento?.LOGRADOURO) ? 
+                        $"{estabelecimento.TIPO_LOGRADOURO} {estabelecimento.LOGRADOURO}" : null,
                     Numero = estabelecimento?.NUMERO,
                     Complemento = estabelecimento?.COMPLEMENTO,
                     Bairro = estabelecimento?.BAIRRO,
-                    CEP = FormatCEP(estabelecimento?.CEP),
+                    CEP = FormatCEP(estabelecimento?.CEP ?? ""),
                     Municipio = estabelecimento?.MUNICIPIO,
                     UF = estabelecimento?.UF
                 },
                 Contato = new ContatoDto
                 {
-                    Telefone1 = FormatTelefone(estabelecimento?.DDD_1, estabelecimento?.TEL_1),
-                    Telefone2 = FormatTelefone(estabelecimento?.DDD_2, estabelecimento?.TEL_2),
-                    Fax = FormatTelefone(estabelecimento?.DDD_FAX, estabelecimento?.FAX),
+                    Telefone1 = FormatTelefone(estabelecimento?.DDD_1 ?? "", estabelecimento?.TEL_1 ?? ""),
+                    Telefone2 = FormatTelefone(estabelecimento?.DDD_2 ?? "", estabelecimento?.TEL_2 ?? ""),
+                    Fax = FormatTelefone(estabelecimento?.DDD_FAX ?? "", estabelecimento?.FAX ?? ""),
                     Email = estabelecimento?.EMAIL
                 },
                 SimplesNacional = new SimplesNacionalDto
@@ -165,19 +170,9 @@ namespace CnpjApi.Services
         private string FormatTelefone(string ddd, string numero)
         {
             if (string.IsNullOrEmpty(ddd) || string.IsNullOrEmpty(numero))
-                return null;
+                return "";
 
             return $"({ddd}) {numero}";
         }
-    }
-
-    public class ConsultaFiltrosDto
-    {
-        public string UF { get; set; }
-        public int Ano { get; set; }
-        public string FormaTributacao { get; set; }
-        public decimal CapitalSocialMinimo { get; set; }
-        public DateTime? DataInicioAtividadeInicio { get; set; }
-        public DateTime? DataInicioAtividadeFim { get; set; }
     }
 }
