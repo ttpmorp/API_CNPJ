@@ -1,19 +1,40 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CnpjApi.Models;
 
-
 namespace CnpjApi.Data
 {
+    /// <summary>
+    /// Contexto do banco de dados para acesso às tabelas do CNPJ
+    /// </summary>
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 
+        /// <summary>
+        /// Tabela de empresas
+        /// </summary>
         public DbSet<Empresa> Empresas { get; set; }
+        
+        /// <summary>
+        /// Tabela de estabelecimentos (matrizes e filiais)
+        /// </summary>
         public DbSet<Estabelecimento> Estabelecimentos { get; set; }
+        
+        /// <summary>
+        /// Tabela de informações do Simples Nacional
+        /// </summary>
         public DbSet<Simples> Simples { get; set; }
+        
+        /// <summary>
+        /// Tabela de informações de tributação
+        /// </summary>
         public DbSet<Tributacao> Tributacoes { get; set; }
+        
+        /// <summary>
+        /// Tabela de sócios
+        /// </summary>
         public DbSet<Socio> Socios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -74,14 +74,21 @@ namespace CnpjApi.Controllers
             return Ok(new { message = "Funcionalidade em desenvolvimento" });
         }
 
-        // No CNPJController.cs, adicione este método
+        /// <summary>
+        /// Valida se o CNPJ possui o formato correto
+        /// Um CNPJ válido deve ter 14 dígitos e não pode ter todos os dígitos iguais
+        /// </summary>
+        /// <param name="cnpj">CNPJ a ser validado</param>
+        /// <returns>True se o CNPJ for válido, False caso contrário</returns>
         private bool ValidarCNPJ(string cnpj)
         {
             var cnpjLimpo = new string(cnpj.Where(char.IsDigit).ToArray());
 
+            // Um CNPJ válido deve ter exatamente 14 dígitos
             if (cnpjLimpo.Length != 14)
                 return false;
 
+            // Verifica se todos os dígitos são iguais (caso comum de CNPJ inválido)
             if (cnpjLimpo.All(d => d == cnpjLimpo[0]))
                 return false;
 
